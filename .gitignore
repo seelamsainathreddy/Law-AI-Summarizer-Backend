@@ -1,0 +1,43 @@
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.log
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# FastAPI / Python tooling
+.mypy_cache/
+.pytest_cache/
+coverage.*
+*.cover
+*.py,cover
+htmlcov/
+.cache/
+.tox/
+.dmypy.json
+.pyre/
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS-specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+
+

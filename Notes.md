@@ -1,0 +1,2 @@
+## AI summarizer project design
+
