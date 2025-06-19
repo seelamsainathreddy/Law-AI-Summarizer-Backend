@@ -9,6 +9,9 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from summarizer import summarize_document
 from fastapi import Security
+from datetime import datetime
+
+
 
 user_summaries = {}
 fake_users_db = {}
@@ -28,7 +31,6 @@ app.add_middleware(
 
 @app.post("/summarize")
 async def summarize(file: UploadFile = File(...), token: str = Depends(oauth2_scheme)):
-    # Get user email from token
     try:
         payload = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
         email = payload.get("sub")
@@ -40,12 +42,35 @@ async def summarize(file: UploadFile = File(...), token: str = Depends(oauth2_sc
     file_bytes = await file.read()
     result = summarize_document(file_bytes)
 
-    # Save summary for user
+    # Prepare metadata
+    summary_record = {
+        "summary": result,
+        "filename": file.filename,
+        "uploaded_at": datetime.utcnow().isoformat() + "Z"
+    }
+
     if email not in user_summaries:
         user_summaries[email] = []
-    user_summaries[email].append(result)
+    user_summaries[email].append(summary_record)
 
-    return result
+    return summary_record
+
+
+
+from typing import List, Dict, Any
+
+@app.get("/summaries", response_model=List[Dict[str, Any]])
+def get_summaries(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
+        email = payload.get("sub")
+        if email is None or email not in fake_users_db:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return user_summaries.get(email, [])
+
 
 @app.post("/register", response_model=UserOut)
 def register(user: UserIn):

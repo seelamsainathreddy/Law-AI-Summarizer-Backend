@@ -6,7 +6,7 @@ import requests
 
 # Load environment variables from .env
 load_dotenv()
-print("API key loaded" + os.getenv("GROQ_API_KEY"))
+print("API key loaded : " + os.getenv("GROQ_API_KEY"))
 
 PROMPT_TEMPLATE = """
 You are a legal assistant. Analyze the following legal document and return a JSON object in the following format:
